@@ -1,0 +1,504 @@
+provider: anthropic
+version: 1
+requestMapping:
+  messageMappings:
+    user:
+      roleMapping:
+        pointer: /messages/*/role
+      textBlockMapping:
+        textMapping:
+          pointer: /messages/*/content/*/text
+        startAttributes:
+        - pointer: /messages/*/content/*/type
+          overrideValue: text
+      imageBlockMapping:
+        formatMapping:
+          pointer: /messages/*/content/*/source/media_type
+          prefix: image/
+        bytesMapping:
+          pointer: /messages/*/content/*/source/data
+        startAttributes:
+        - pointer: /messages/*/content/*/type
+          overrideValue: image
+        - pointer: /messages/*/content/*/source/type
+          overrideValue: base64
+      cachePointBlockMapping:
+        typeMapping:
+          pointer: /messages/*/content/*/cache_control/type
+          overrideValue: ephemeral
+          overwriteAllowed: true
+        mergeInPreviousBlock: true
+      toolResultBlockMapping:
+        toolUseIdMapping:
+          pointer: /messages/*/content/*/tool_use_id
+        contentMapping:
+          jsonBlockMapping:
+            jsonMapping:
+              pointer: /messages/*/content/*/content/*/text
+              writeAsString: true
+            startAttributes:
+            - pointer: /messages/*/content/*/content/*/type
+              overrideValue: text
+          textBlockMapping:
+            textMapping:
+              pointer: /messages/*/content/*/content/*/text
+            startAttributes:
+            - pointer: /messages/*/content/*/content/*/type
+              overrideValue: text
+          imageBlockMapping:
+            formatMapping:
+              pointer: /messages/*/content/*/content/*/source/media_type
+              prefix: image/
+            bytesMapping:
+              pointer: /messages/*/content/*/content/*/source/data
+            startAttributes:
+            - pointer: /messages/*/content/*/content/*/type
+              overrideValue: image
+            - pointer: /messages/*/content/*/content/*/source/type
+              overrideValue: base64
+          documentsMapping:
+            documentBlockMapping:
+              indexMapping:
+                pointer: /messages/*/content/*/content/*/text
+                prefix: <document index="
+                suffix: '">
+
+                  '
+                append: true
+              nameMapping:
+                pointer: /messages/*/content/*/content/*/text
+                prefix: <source>
+                append: true
+              formatMapping:
+                pointer: /messages/*/content/*/content/*/text
+                prefix: .
+                suffix: '</source>
+
+                  '
+                append: true
+              contentMapping:
+                pointer: /messages/*/content/*/content/*/text
+                prefix: <document_content>
+                suffix: '</document_content>
+
+                  </document>
+
+                  '
+                append: true
+            startAttributes:
+            - pointer: /messages/*/content/*/content/*/type
+              overrideValue: text
+            - pointer: /messages/*/content/*/content/*/text
+              overrideValue: '<documents allow_instructions=false>
+
+                '
+              append: true
+            endAttributes:
+            - pointer: /messages/*/content/*/content/*/text
+              overrideValue: </documents>
+              append: true
+        statusMapping:
+          success:
+            pointer: /messages/*/content/*/is_error
+            overrideValue: false
+          error:
+            pointer: /messages/*/content/*/is_error
+            overrideValue: true
+        startAttributes:
+        - pointer: /messages/*/content/*/type
+          overrideValue: tool_result
+      documentsMapping:
+        documentBlockMapping:
+          indexMapping:
+            pointer: /messages/*/content/*/text
+            prefix: <document index="
+            suffix: '">
+
+              '
+            append: true
+          nameMapping:
+            pointer: /messages/*/content/*/text
+            prefix: <source>
+            append: true
+          formatMapping:
+            pointer: /messages/*/content/*/text
+            prefix: .
+            suffix: '</source>
+
+              '
+            append: true
+          contentMapping:
+            pointer: /messages/*/content/*/text
+            prefix: <document_content>
+            suffix: '</document_content>
+
+              </document>
+
+              '
+            append: true
+        startAttributes:
+        - pointer: /messages/*/content/*/type
+          overrideValue: text
+          overwriteAllowed: true
+        - pointer: /messages/*/content/*/text
+          overrideValue: '<documents allow_instructions=false>
+
+            '
+          append: true
+          overwriteAllowed: true
+        endAttributes:
+        - pointer: /messages/*/content/*/text
+          overrideValue: </documents>
+          append: true
+          overwriteAllowed: true
+      rawDocumentsMapping:
+        rawDocumentBlockMapping:
+          nameMapping:
+            pointer: /messages/*/content/*/title
+          formatMapping: {}
+          contextMapping:
+            pointer: /messages/*/content/*/context
+          textMapping:
+            dataMapping:
+              pointer: /messages/*/content/*/source/data
+            startAttributes:
+            - pointer: /messages/*/content/*/source/type
+              overrideValue: text
+              overwriteAllowed: true
+            - pointer: /messages/*/content/*/source/media_type
+              overrideValue: text/plain
+              overwriteAllowed: true
+          bytesMapping:
+            dataMapping:
+              pointer: /messages/*/content/*/source/data
+            startAttributes:
+            - pointer: /messages/*/content/*/source/type
+              overrideValue: base64
+              overwriteAllowed: true
+            - pointer: /messages/*/content/*/source/media_type
+              overrideValue: application/pdf
+              overwriteAllowed: true
+          chunkMapping:
+            dataMapping:
+              textMapping:
+                pointer: /messages/*/content/*/source/content/*/text
+              startAttributes:
+              - pointer: /messages/*/content/*/source/content/*/type
+                overrideValue: text
+                append: true
+                overwriteAllowed: true
+            startAttributes:
+            - pointer: /messages/*/content/*/source/type
+              overrideValue: content
+              overwriteAllowed: true
+          sourceTypeMapping:
+            pointer: /messages/*/content/*/source/type
+          sourceMediaTypeMapping:
+            pointer: /messages/*/content/*/source/media_type
+          s3UriMapping:
+            pointer: /messages/*/content/*/source/s3Location/uri
+          s3BucketOwnerMapping:
+            pointer: /messages/*/content/*/source/s3Location/bucketOwner
+          citationsConfigMapping:
+            enabledMapping:
+              pointer: /messages/*/content/*/citations/enabled
+          startAttributes:
+          - pointer: /messages/*/content/*/type
+            overrideValue: document
+            append: true
+            overwriteAllowed: true
+        mapContentLevelDocuments: false
+    assistant:
+      roleMapping:
+        pointer: /messages/*/role
+      textBlockMapping:
+        textMapping:
+          pointer: /messages/*/content/*/text
+        startAttributes:
+        - pointer: /messages/*/content/*/type
+          overrideValue: text
+      reasoningBlockMapping:
+        reasoningTextBlockMapping:
+          textMapping:
+            pointer: /messages/*/content/*/thinking
+          signatureMapping:
+            pointer: /messages/*/content/*/signature
+          startAttributes:
+          - pointer: /messages/*/content/*/type
+            overrideValue: thinking
+        redactedContentMapping:
+          bytesMapping:
+            pointer: /messages/*/content/*/data
+            writeByteBufferAsUTF8String: true
+          startAttributes:
+          - pointer: /messages/*/content/*/type
+            overrideValue: redacted_thinking
+      citationsContentBlockMapping:
+        contentMapping:
+          textMapping:
+            pointer: /messages/*/content/*/text
+        citationsMapping:
+          titleMapping:
+            pointer: /messages/*/content/*/citations/*/document_title
+          sourceContentMapping:
+            textMapping:
+              pointer: /messages/*/content/*/citations/*/cited_text
+          locationMapping:
+            documentPageMapping:
+              documentIndexMapping:
+                pointer: /messages/*/content/*/citations/*/document_index
+              startMapping:
+                pointer: /messages/*/content/*/citations/*/start_page_number
+              endMapping:
+                pointer: /messages/*/content/*/citations/*/end_page_number
+              startAttributes:
+              - pointer: /messages/*/content/*/citations/*/type
+                overrideValue: page_location
+            documentCharMapping:
+              documentIndexMapping:
+                pointer: /messages/*/content/*/citations/*/document_index
+              startMapping:
+                pointer: /messages/*/content/*/citations/*/start_char_index
+              endMapping:
+                pointer: /messages/*/content/*/citations/*/end_char_index
+              startAttributes:
+              - pointer: /messages/*/content/*/citations/*/type
+                overrideValue: char_location
+            documentChunkMapping:
+              documentIndexMapping:
+                pointer: /messages/*/content/*/citations/*/document_index
+              startMapping:
+                pointer: /messages/*/content/*/citations/*/start_block_index
+              endMapping:
+                pointer: /messages/*/content/*/citations/*/end_block_index
+              startAttributes:
+              - pointer: /messages/*/content/*/citations/*/type
+                overrideValue: content_block_location
+        startAttributes:
+        - pointer: /messages/*/content/*/type
+          overrideValue: text
+      cachePointBlockMapping:
+        typeMapping:
+          pointer: /messages/*/content/*/cache_control/type
+          overrideValue: ephemeral
+          overwriteAllowed: true
+        mergeInPreviousBlock: true
+      toolUseBlockMapping:
+        toolUseIdMapping:
+          pointer: /messages/*/content/*/id
+        nameMapping:
+          pointer: /messages/*/content/*/name
+        inputMapping:
+          pointer: /messages/*/content/*/input
+        startAttributes:
+        - pointer: /messages/*/content/*/type
+          overrideValue: tool_use
+  lastMessageMappings:
+    user:
+      overrideMapping: null
+    assistant:
+      overrideMapping: null
+  additionalFieldOverride:
+    reasoning_config: thinking
+  systemMapping:
+    textBlockMapping:
+      textMapping:
+        pointer: /system/**/text
+      startAttributes:
+      - pointer: /system/**/type
+        overrideValue: text
+    cachePointBlockMapping:
+      typeMapping:
+        pointer: /system/**/cache_control/type
+        overrideValue: ephemeral
+        overwriteAllowed: true
+      mergeInPreviousBlock: true
+  inferenceConfigMapping:
+    maxTokensMapping:
+      pointer: /max_tokens
+    temperatureMapping:
+      pointer: /temperature
+    topPMapping:
+      pointer: /top_p
+    stopSequencesMapping:
+      pointer: /stop_sequences
+    topPMinimumOverride: 0
+    stopSequenceLengthMaximum: 2500
+  toolConfigMapping:
+    toolSpecMapping:
+      nameMapping:
+        pointer: /tools/*/name
+      descriptionMapping:
+        pointer: /tools/*/description
+      inputSchemaMapping:
+        pointer: /tools/*/input_schema
+    cachePointBlockMapping:
+      typeMapping:
+        pointer: /tools/*/cache_control/type
+        overrideValue: ephemeral
+        overwriteAllowed: true
+      mergeInPreviousBlock: true
+    toolChoiceMapping:
+      autoToolChoiceMapping:
+        autoMapping:
+          pointer: /tool_choice/type
+          overrideValue: auto
+      anyToolChoiceMapping:
+        anyMapping:
+          pointer: /tool_choice/type
+          overrideValue: any
+      specificToolChoiceMapping:
+        toolMapping:
+          pointer: /tool_choice/type
+          overrideValue: tool
+        nameMapping:
+          pointer: /tool_choice/name
+  startAttributes:
+  - pointer: /anthropic_version
+    overrideValue: bedrock-2023-05-31
+  arrayMergeEnabled: true
+  blockedAdditionalFieldsPointers:
+  - /stream/allow_concurrent
+  - /stream/allow_out_of_order
+  - /allow_concurrent
+  - /allow_out_of_order
+responseMapping:
+  resultMapping:
+    outputMapping:
+      messageMapping:
+        roleMapping:
+          pointer: /role
+        contentMapping:
+          textMapping:
+            pointer: /content/*/text
+          toolUseMapping:
+            nameMapping:
+              pointer: /content/*/name
+            inputMapping:
+              jsonMapping:
+                pointer: /content/*/input
+          reasoningMapping:
+            redactedContentMapping:
+              pointer: /content/*/data
+            textMapping:
+              pointer: /content/*/thinking
+            signatureMapping:
+              pointer: /content/*/signature
+          citationsContentMapping:
+            citationsMapping:
+              titleMapping:
+                pointer: /content/*/citations/*/document_title
+              sourceContentMapping:
+                pointer: /content/*/citations/*/cited_text
+              locationMapping:
+                documentCharacterMapping:
+                  documentIndexMapping:
+                    pointer: /content/*/citations/*/document_index
+                  startMapping:
+                    pointer: /content/*/citations/*/start_char_index
+                  endMapping:
+                    pointer: /content/*/citations/*/end_char_index
+                documentPageMapping:
+                  documentIndexMapping:
+                    pointer: /content/*/citations/*/document_index
+                  startMapping:
+                    pointer: /content/*/citations/*/start_page_number
+                  endMapping:
+                    pointer: /content/*/citations/*/end_page_number
+                documentChunkMapping:
+                  documentIndexMapping:
+                    pointer: /content/*/citations/*/document_index
+                  startMapping:
+                    pointer: /content/*/citations/*/start_block_index
+                  endMapping:
+                    pointer: /content/*/citations/*/end_block_index
+    stopReasonMapping:
+      pointer: /stop_reason
+      valueMap:
+        end_turn: TURN_END
+        stop_sequence: STOP_SEQUENCE
+        max_tokens: TOKEN_LIMIT
+        tool_use: TOOL_USE
+        refusal: CONTENT_FILTERED
+      valueMapDefault: UNKNOWN
+    additionalFieldsRoot: /
+responseEventMapping:
+  resultEventMapping:
+    outputMapping:
+      messageDeltaMapping:
+        roleMapping:
+          pointer: /message/role
+        contentMapping:
+          indexMapping:
+            pointer: /index
+          textMapping:
+            pointer: /delta/text
+          toolUseMapping:
+            nameMapping:
+              pointer: /content_block/name
+            inputMapping:
+              jsonMapping:
+                pointer: /delta/partial_json
+          reasoningDeltaMapping:
+            redactedContentMapping:
+              pointer: /content_block/data
+            textMapping:
+              pointer: /delta/thinking
+            signatureMapping:
+              pointer: /delta/signature
+          citationDeltaMapping:
+            titleMapping:
+              pointer: /delta/citation/document_title
+            sourceContentMapping:
+              textMapping:
+                pointer: /delta/citation/cited_text
+            locationMapping:
+              documentCharacterMapping:
+                documentIndexMapping:
+                  pointer: /delta/citation/document_index
+                startMapping:
+                  pointer: /delta/citation/start_char_index
+                endMapping:
+                  pointer: /delta/citation/end_char_index
+              documentPageMapping:
+                documentIndexMapping:
+                  pointer: /delta/citation/document_index
+                startMapping:
+                  pointer: /delta/citation/start_page_number
+                endMapping:
+                  pointer: /delta/citation/end_page_number
+              documentChunkMapping:
+                documentIndexMapping:
+                  pointer: /delta/citation/document_index
+                startMapping:
+                  pointer: /delta/citation/start_block_index
+                endMapping:
+                  pointer: /delta/citation/end_block_index
+  completionEventMapping:
+    stopReasonMapping:
+      pointer: /delta/stop_reason
+      valueMap:
+        end_turn: TURN_END
+        stop_sequence: STOP_SEQUENCE
+        max_tokens: TOKEN_LIMIT
+        tool_use: TOOL_USE
+        refusal: CONTENT_FILTERED
+      valueMapDefault: UNKNOWN
+includeConvoWithToolUse: true
+includeConvoWithToolResult: true
+allowAssistantMessageFirst: true
+errorMappings:
+- match: '#: subject must not be valid against schema \{\"required\":\[\"messages\"]}'
+  format: ''
+- match: ^messages\.(\d)\.content\.(\d)\.(?:[a-zA-Z]+)\.source\.base64(?:\.data)?
+  format: messages.%s.content.%s.image.source.bytes
+- match: Image format (?:[a-zA-Z/]+) not supported
+  format: Invalid image input
+- match: 'messages\.(\d): Did not find (\d) `tool_result` block\(s\) at the beginning
+    of this message\. Messages following `tool_use` blocks must begin with a matching
+    number of `tool_result` blocks\.'
+  format: Messages following `toolUse` blocks must begin with a matching number of
+    `toolResult` blocks\.
+- match: first message must use the \"user\" role
+  format: A conversation must start with a user message. Try again with a conversation
+    that starts with a user message\.

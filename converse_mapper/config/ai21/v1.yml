@@ -1,0 +1,141 @@
+provider: ai21
+version: 1
+requestMapping:
+  messageMappings:
+    user:
+      roleMapping: {}
+      textBlockMapping:
+        roleMapping:
+          pointer: /messages/*/role
+        textMapping:
+          pointer: /messages/*/content
+          append: true
+        mergeConsecutiveBlocks: true
+      documentsMapping:
+        documentBlockMapping:
+          indexMapping: {}
+          nameMapping:
+            pointer: /documents/**/metadata/name
+          formatMapping:
+            pointer: /documents/**/metadata/format
+          contentMapping:
+            pointer: /documents/**/content
+      toolResultBlockMapping:
+        roleMapping:
+          pointer: /messages/**/role
+          overrideValue: tool
+        toolUseIdMapping:
+          pointer: /messages/**/tool_call_id
+        contentMapping:
+          jsonBlockMapping:
+            jsonMapping:
+              pointer: /messages/**/content
+              writeAsString: true
+              append: true
+          textBlockMapping:
+            textMapping:
+              pointer: /messages/**/content
+              append: true
+          documentsMapping:
+            documentBlockMapping:
+              indexMapping: {}
+              contentMapping:
+                pointer: /documents/***/content
+              nameMapping:
+                pointer: /documents/***/metadata/name
+              formatMapping:
+                pointer: /documents/***/metadata/format
+        statusMapping:
+          success: {}
+          error: {}
+    assistant:
+      roleMapping:
+        pointer: /messages/*/role
+      textBlockMapping:
+        textMapping:
+          pointer: /messages/*/content
+          append: true
+        mergeConsecutiveBlocks: true
+      toolUseBlockMapping:
+        toolUseIdMapping:
+          pointer: /messages/*/tool_calls/*/id
+        nameMapping:
+          pointer: /messages/*/tool_calls/*/function/name
+        inputMapping:
+          pointer: /messages/*/tool_calls/*/function/arguments
+          writeAsString: true
+          append: true
+  lastMessageMappings:
+    user:
+      overrideMapping: null
+  systemMapping:
+    textBlockMapping:
+      textMapping:
+        pointer: /messages/*/content
+        append: true
+    startAttributes:
+    - pointer: /messages/*/role
+      overrideValue: system
+  inferenceConfigMapping:
+    maxTokensMapping:
+      pointer: /max_tokens
+    temperatureMapping:
+      pointer: /temperature
+    topPMapping:
+      pointer: /top_p
+    stopSequencesMapping:
+      pointer: /stop
+    topPMinimumOverride: 1.0e-45
+    stopSequenceLengthMaximum: 8191
+  toolConfigMapping:
+    toolSpecMapping:
+      nameMapping:
+        pointer: /tools/*/function/name
+      descriptionMapping:
+        pointer: /tools/*/function/description
+      inputSchemaMapping:
+        pointer: /tools/*/function/parameters
+      startAttributes:
+      - pointer: /tools/*/type
+        overrideValue: function
+    toolChoiceMapping:
+      autoToolChoiceMapping:
+        autoMapping: {}
+responseMapping:
+  resultMapping:
+    outputMapping:
+      messageMapping:
+        roleMapping:
+          pointer: /choices/0/message/role
+        contentMapping:
+          textMapping:
+            pointer: /choices/0/message/content
+          toolUseMapping:
+            nameMapping:
+              pointer: /choices/0/message/tool_calls/*/function/name
+            inputMapping:
+              jsonMapping:
+                pointer: /choices/0/message/tool_calls/*/function/arguments
+                deserializeJson: true
+    stopReasonMapping:
+      pointer: /choices/0/finish_reason
+      valueMap:
+        length: TOKEN_LIMIT
+      valueMapDefault: UNKNOWN
+    additionalFieldsRoot: /
+responseEventMapping:
+  resultEventMapping:
+    outputMapping:
+      messageDeltaMapping:
+        roleMapping:
+          pointer: /choices/0/delta/role
+        contentMapping:
+          textMapping:
+            pointer: /choices/0/delta/content
+  completionEventMapping:
+    stopReasonMapping:
+      pointer: /choices/0/finish_reason
+      valueMap:
+        stop: TURN_END
+        length: TOKEN_LIMIT
+      valueMapDefault: UNKNOWN

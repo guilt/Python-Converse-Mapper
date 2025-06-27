@@ -1,0 +1,254 @@
+provider: meta
+version: 1
+requestMapping:
+  endAttributes:
+  - pointer: /prompt
+    overrideValue: '<|eot|><|header_start|>assistant<|header_end|>
+
+
+      '
+    append: true
+  messageMappings:
+    user:
+      roleMapping: {}
+      textBlockMapping:
+        textMapping:
+          pointer: /prompt
+          append: true
+        mergeConsecutiveBlocks: true
+      imageBlockMapping:
+        formatMapping:
+          pointer: /image_formats/**
+          arrayPointersEnabled: true
+        bytesMapping:
+          pointer: /images/**
+          arrayPointersEnabled: true
+        startAttributes:
+        - pointer: /prompt
+          overrideValue: <|image|>
+          append: true
+      toolResultBlockMapping:
+        toolUseIdMapping: {}
+        toolUseBlockMapping:
+          startAttributes:
+          - pointer: /prompt
+            overrideValue: '<|eot|><|header_start|>assistant<|header_end|>
+
+
+              '
+            append: true
+          - pointer: /prompt
+            overrideValue: '{'
+            append: true
+          endAttributes:
+          - pointer: /prompt
+            overrideValue: '}'
+            append: true
+          - pointer: /prompt
+            overrideValue: '<|eot|><|header_start|>ipython<|header_end|>
+
+
+              '
+            append: true
+          toolUseIdMapping: {}
+          nameMapping:
+            pointer: /prompt
+            prefix: '"name": "'
+            suffix: '", "parameters": '
+            append: true
+          inputMapping:
+            pointer: /prompt
+            writeAsString: true
+            append: true
+        contentMapping:
+          jsonBlockMapping:
+            jsonMapping:
+              pointer: /prompt
+              writeAsString: true
+              append: true
+          textBlockMapping:
+            textMapping:
+              pointer: /prompt
+              prefix: '"'
+              suffix: '"'
+              append: true
+          imageBlockMapping:
+            formatMapping:
+              pointer: /image_formats/***
+              arrayPointersEnabled: true
+            bytesMapping:
+              pointer: /images/***
+              arrayPointersEnabled: true
+            startAttributes:
+            - pointer: /prompt
+              overrideValue: <|image|>
+              append: true
+          documentsMapping:
+            documentBlockMapping:
+              indexMapping:
+                pointer: /prompt
+                prefix: <document index="
+                suffix: '">
+
+                  '
+                append: true
+              nameMapping:
+                pointer: /prompt
+                prefix: <source>
+                append: true
+              formatMapping:
+                pointer: /prompt
+                prefix: .
+                suffix: '</source>
+
+                  '
+                append: true
+              contentMapping:
+                pointer: /prompt
+                prefix: <document_content>
+                suffix: '</document_content>
+
+                  </document>
+
+                  '
+                append: true
+            startAttributes:
+            - pointer: /prompt
+              overrideValue: '"<documents>
+
+                '
+              append: true
+            endAttributes:
+            - pointer: /prompt
+              overrideValue: '</documents>
+
+
+                '
+              append: true
+        statusMapping:
+          success: {}
+          error: {}
+      documentsMapping:
+        documentBlockMapping:
+          indexMapping:
+            pointer: /prompt
+            prefix: <document index="
+            suffix: '">
+
+              '
+            append: true
+          nameMapping:
+            pointer: /prompt
+            prefix: <source>
+            append: true
+          formatMapping:
+            pointer: /prompt
+            prefix: .
+            suffix: '</source>
+
+              '
+            append: true
+          contentMapping:
+            pointer: /prompt
+            prefix: <document_content>
+            suffix: '</document_content>
+
+              </document>
+
+              '
+            append: true
+        startAttributes:
+        - pointer: /prompt
+          overrideValue: '<documents>
+
+            '
+          append: true
+        endAttributes:
+        - pointer: /prompt
+          overrideValue: '</documents>
+
+
+            '
+          append: true
+    assistant:
+      roleMapping: {}
+      textBlockMapping:
+        startAttributes:
+        - pointer: /prompt
+          overrideValue: '<|eot|><|header_start|>assistant<|header_end|>
+
+
+            '
+          append: true
+        textMapping:
+          pointer: /prompt
+          append: true
+        mergeConsecutiveBlocks: true
+      toolUseBlockMapping:
+        toolUseIdMapping: {}
+        nameMapping: {}
+        inputMapping: {}
+  lastMessageMappings:
+    user:
+      overrideMapping: null
+  systemMapping:
+    textBlockMapping:
+      textMapping:
+        pointer: /prompt
+        append: true
+  inferenceConfigMapping:
+    maxTokensMapping:
+      pointer: /max_gen_len
+    temperatureMapping:
+      pointer: /temperature
+    topPMapping:
+      pointer: /top_p
+    topPMinimumOverride: 1.0e-45
+    stopSequencesMapping:
+      pointer: /stop
+    stopSequenceLengthMaximum: 8190
+  toolConfigMapping:
+    toolSpecMapping:
+      nameMapping: {}
+      descriptionMapping: {}
+      inputSchemaMapping: {}
+    toolChoiceMapping:
+      autoToolChoiceMapping:
+        autoMapping: {}
+  customMessageMappers:
+  - MetaV5UserMessageHeaderMapper
+  customRequestMappers:
+  - MetaV5SystemPromptMapper
+responseMapping:
+  resultMapping:
+    outputMapping:
+      messageMapping:
+        roleMapping:
+          overrideValue: assistant
+        contentMapping:
+          textMapping:
+            pointer: /generation
+    stopReasonMapping:
+      pointer: /stop_reason
+      valueMap:
+        length: TOKEN_LIMIT
+      valueMapDefault: UNKNOWN
+    additionalFieldsRoot: /
+  customResponseMappers:
+  - MetaV5ContentBlockMapper
+responseEventMapping:
+  resultEventMapping:
+    outputMapping:
+      messageDeltaMapping:
+        roleMapping:
+          overrideValue: assistant
+        contentMapping:
+          textMapping:
+            pointer: /generation
+  completionEventMapping:
+    stopReasonMapping:
+      pointer: /stop_reason
+      valueMap:
+        stop: TURN_END
+        length: TOKEN_LIMIT
+      valueMapDefault: UNKNOWN

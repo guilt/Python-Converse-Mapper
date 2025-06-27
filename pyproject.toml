@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "converse-mapper"
+version = "1.0.1"
+description = "Simple, readable AI model interface transformer for Amazon Bedrock"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE.md"]
+authors = [
+    {name = "Karthik Kumar Viswanathan", email = "me@karthikkumar.org"},
+    {name = "Claude Code", email = "claude@anthropic.com"}
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+keywords = ["ai", "bedrock", "aws", "llm", "transformer"]
+requires-python = ">=3.8"
+dependencies = [
+    "PyYAML>=6.0.0"
+]
+
+[project.optional-dependencies]
+http = [
+    "requests>=2.25.0"
+]
+aws = [
+    "boto3>=1.26.0"
+]
+dev = [
+    "converse-mapper[aws,http]",
+    "coverage>=7.0.0",
+    "black>=22.0.0",
+    "flake8>=4.0.0",
+    "mypy>=0.950"
+]
+
+[project.urls]
+Homepage = "https://github.com/guilt/Python-Converse-Mapper"
+Repository = "https://github.com/guilt/Python-Converse-Mapper"
+Documentation = "https://github.com/guilt/Python-Converse-Mapper/blob/main/README.md"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["converse_mapper*"]
+
+[tool.setuptools.package-data]
+converse_mapper = ["config/**/*.yml"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true

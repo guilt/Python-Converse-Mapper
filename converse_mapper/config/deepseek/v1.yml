@@ -1,0 +1,121 @@
+provider: deepseek
+version: 1
+requestMapping:
+  messageMappings:
+    user:
+      roleMapping: {}
+      textBlockMapping:
+        roleMapping:
+          pointer: /messages/*/role
+        textMapping:
+          pointer: /messages/*/content
+          append: true
+        mergeConsecutiveBlocks: true
+      documentsMapping:
+        documentBlockMapping:
+          indexMapping:
+            pointer: /messages/*/content
+            prefix: <document index="
+            suffix: '">
+
+              '
+            append: true
+          nameMapping:
+            pointer: /messages/*/content
+            prefix: <source>
+            append: true
+          formatMapping:
+            pointer: /messages/*/content
+            prefix: .
+            suffix: '</source>
+
+              '
+            append: true
+          contentMapping:
+            pointer: /messages/*/content
+            prefix: <document_content>
+            suffix: '</document_content>
+
+              </document>
+
+              '
+            append: true
+        startAttributes:
+        - pointer: /messages/*/content
+          overrideValue: '<documents>
+
+            '
+          append: true
+        endAttributes:
+        - pointer: /messages/*/content
+          overrideValue: '</documents>
+
+            '
+          append: true
+    assistant:
+      roleMapping:
+        pointer: /messages/*/role
+      textBlockMapping:
+        textMapping:
+          pointer: /messages/*/content
+          append: true
+        mergeConsecutiveBlocks: true
+  lastMessageMappings:
+    user:
+      overrideMapping: null
+  systemMapping:
+    textBlockMapping:
+      textMapping:
+        pointer: /messages/*/content
+        append: true
+    startAttributes:
+    - pointer: /messages/*/role
+      overrideValue: system
+  inferenceConfigMapping:
+    maxTokensMapping:
+      pointer: /max_tokens
+    temperatureMapping:
+      pointer: /temperature
+    topPMapping:
+      pointer: /top_p
+    stopSequencesMapping:
+      pointer: /stop
+    stopSequenceLengthMaximum: 10
+responseMapping:
+  resultMapping:
+    outputMapping:
+      messageMapping:
+        roleMapping:
+          pointer: /choices/0/message/role
+        contentMapping:
+          textMapping:
+            pointer: /choices/0/message/content
+          reasoningMapping:
+            textMapping:
+              pointer: /choices/0/message/reasoning_content
+    stopReasonMapping:
+      pointer: /choices/0/stop_reason
+      valueMap:
+        stop: TURN_END
+        length: TOKEN_LIMIT
+      valueMapDefault: UNKNOWN
+    additionalFieldsRoot: /
+responseEventMapping:
+  resultEventMapping:
+    outputMapping:
+      messageDeltaMapping:
+        roleMapping:
+          pointer: /choices/0/message/role
+        contentMapping:
+          textMapping:
+            pointer: /choices/0/message/content
+          reasoningDeltaMapping:
+            textMapping:
+              pointer: /choices/0/message/reasoning_content
+  completionEventMapping:
+    stopReasonMapping:
+      pointer: /choices/0/stop_reason
+      valueMap:
+        stop: TURN_END
+        length: TOKEN_LIMIT
+      valueMapDefault: UNKNOWN

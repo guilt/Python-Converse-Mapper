@@ -1,0 +1,242 @@
+provider: mistral
+version: 1
+requestMapping:
+  messageMappings:
+    user:
+      roleMapping: {}
+      textBlockMapping:
+        roleMapping:
+          pointer: /messages/*/role
+          overrideValue: user
+          overwriteAllowed: true
+        textMapping:
+          pointer: /messages/*/content/*/text
+          append: true
+        startAttributes:
+        - pointer: /messages/*/content/*/type
+          overrideValue: text
+        mergeConsecutiveBlocks: true
+      documentsMapping:
+        documentBlockMapping:
+          indexMapping:
+            pointer: /messages/*/content/*/text
+            prefix: <document index="
+            suffix: '">
+
+              '
+            append: true
+          nameMapping:
+            pointer: /messages/*/content/*/text
+            prefix: <source>
+            append: true
+          formatMapping:
+            pointer: /messages/*/content/*/text
+            prefix: .
+            suffix: '</source>
+
+              '
+            append: true
+          contentMapping:
+            pointer: /messages/*/content/*/text
+            prefix: <document_content>
+            suffix: '</document_content>
+
+              </document>
+
+              '
+            append: true
+        startAttributes:
+        - pointer: /messages/*/content/*/text
+          overrideValue: '<documents>
+
+            '
+          append: true
+        - pointer: /messages/*/content/*/type
+          overrideValue: text
+        endAttributes:
+        - pointer: /messages/*/content/*/text
+          overrideValue: '</documents>
+
+            '
+          append: true
+      toolResultBlockMapping:
+        roleMapping:
+          pointer: /messages/**/role
+          overrideValue: tool
+          overwriteAllowed: true
+        toolUseIdMapping:
+          pointer: /messages/**/tool_call_id
+        contentMapping:
+          jsonBlockMapping:
+            jsonMapping:
+              pointer: /messages/**/content
+              writeAsString: true
+              append: true
+          textBlockMapping:
+            textMapping:
+              pointer: /messages/**/content
+              append: true
+          documentsMapping:
+            documentBlockMapping:
+              indexMapping:
+                pointer: /messages/**/content
+                prefix: <document index="
+                suffix: '">
+
+                  '
+                append: true
+              nameMapping:
+                pointer: /messages/**/content
+                prefix: <source>
+                append: true
+              formatMapping:
+                pointer: /messages/**/content
+                prefix: .
+                suffix: '</source>
+
+                  '
+                append: true
+              contentMapping:
+                pointer: /messages/**/content
+                prefix: <document_content>
+                suffix: '</document_content>
+
+                  </document>
+
+                  '
+                append: true
+            startAttributes:
+            - pointer: /messages/**/content
+              overrideValue: '<documents>
+
+                '
+              append: true
+            endAttributes:
+            - pointer: /messages/**/content
+              overrideValue: '</documents>
+
+                '
+              append: true
+        statusMapping:
+          success: {}
+          error: {}
+        startAttributes:
+        - pointer: /messages/**/content
+          overrideValue: ''
+      imageBlockMapping:
+        roleMapping:
+          pointer: /messages/*/role
+          overrideValue: user
+          overwriteAllowed: true
+        formatMapping:
+          pointer: /messages/*/content/*/image_url/url
+          prefix: data:image/
+          suffix: ;
+          append: true
+        bytesMapping:
+          pointer: /messages/*/content/*/image_url/url
+          prefix: base64,
+          append: true
+        startAttributes:
+        - pointer: /messages/*/content/*/type
+          overrideValue: image_url
+    assistant:
+      roleMapping:
+        pointer: /messages/*/role
+      textBlockMapping:
+        textMapping:
+          pointer: /messages/*/content
+          append: true
+        mergeConsecutiveBlocks: true
+      toolUseBlockMapping:
+        toolUseIdMapping:
+          pointer: /messages/*/tool_calls/*/id
+        nameMapping:
+          pointer: /messages/*/tool_calls/*/function/name
+        inputMapping:
+          pointer: /messages/*/tool_calls/*/function/arguments
+          writeAsString: true
+          append: true
+  lastMessageMappings:
+    user:
+      overrideMapping: null
+  systemMapping:
+    textBlockMapping:
+      textMapping:
+        pointer: /messages/*/content
+        append: true
+    startAttributes:
+    - pointer: /messages/*/role
+      overrideValue: system
+  inferenceConfigMapping:
+    maxTokensMapping:
+      pointer: /max_tokens
+    temperatureMapping:
+      pointer: /temperature
+    topPMapping:
+      pointer: /top_p
+    stopSequencesMapping:
+      pointer: /stop
+    topPMinimumOverride: 1.0e-45
+    stopSequenceLengthMaximum: 8191
+  toolConfigMapping:
+    toolSpecMapping:
+      nameMapping:
+        pointer: /tools/*/function/name
+      descriptionMapping:
+        pointer: /tools/*/function/description
+      inputSchemaMapping:
+        pointer: /tools/*/function/parameters
+      startAttributes:
+      - pointer: /tools/*/type
+        overrideValue: function
+    toolChoiceMapping:
+      autoToolChoiceMapping:
+        autoMapping:
+          pointer: /tool_choice
+          overrideValue: auto
+      anyToolChoiceMapping:
+        anyMapping:
+          pointer: /tool_choice
+          overrideValue: any
+responseMapping:
+  resultMapping:
+    outputMapping:
+      messageMapping:
+        roleMapping:
+          pointer: /choices/0/message/role
+        contentMapping:
+          textMapping:
+            pointer: /choices/0/message/content
+          toolUseMapping:
+            nameMapping:
+              pointer: /choices/0/message/tool_calls/*/function/name
+            inputMapping:
+              jsonMapping:
+                pointer: /choices/0/message/tool_calls/*/function/arguments
+                deserializeJson: true
+    stopReasonMapping:
+      pointer: /choices/0/stop_reason
+      valueMap:
+        stop: TURN_END
+        length: TOKEN_LIMIT
+        tool_calls: TOOL_USE
+      valueMapDefault: UNKNOWN
+    additionalFieldsRoot: /
+responseEventMapping:
+  resultEventMapping:
+    outputMapping:
+      messageDeltaMapping:
+        roleMapping:
+          pointer: /choices/0/message/role
+        contentMapping:
+          textMapping:
+            pointer: /choices/0/message/content
+  completionEventMapping:
+    stopReasonMapping:
+      pointer: /choices/0/stop_reason
+      valueMap:
+        stop: TURN_END
+        length: TOKEN_LIMIT
+        tool_calls: TOOL_USE
+      valueMapDefault: UNKNOWN

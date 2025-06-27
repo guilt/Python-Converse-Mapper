@@ -1,0 +1,5 @@
+include README.md
+include LICENSE.md
+include MANIFEST.in
+recursive-include converse_mapper *.py *.json *.yml
+recursive-include docs *.md

@@ -1,0 +1,205 @@
+provider: cohere
+version: 1
+requestMapping:
+  startAttributes:
+  - pointer: /force_single_step
+    overrideValue: false
+  messageMappings:
+    user:
+      roleMapping: {}
+      textBlockMapping:
+        roleMapping:
+          pointer: /chat_history/*/role
+          overrideValue: USER
+        textMapping:
+          pointer: /chat_history/*/message
+        mergeConsecutiveBlocks: true
+      toolResultBlockMapping:
+        roleMapping:
+          pointer: /chat_history/*/role
+          overrideValue: TOOL
+          overwriteAllowed: true
+        toolUseIdMapping: {}
+        contentMapping:
+          jsonBlockMapping:
+            jsonMapping:
+              pointer: /chat_history/*/tool_results/*/outputs/*
+              arrayPointersEnabled: true
+          textBlockMapping:
+            textMapping:
+              pointer: /chat_history/*/tool_results/*/outputs/*/text
+          documentsMapping:
+            documentBlockMapping:
+              indexMapping: {}
+              nameMapping:
+                pointer: /documents/***/title
+              formatMapping:
+                pointer: /documents/***/title
+                prefix: .
+                append: true
+              contentMapping:
+                pointer: /documents/***/text
+        toolUseBlockMapping:
+          roleMapping: {}
+          toolUseIdMapping: {}
+          nameMapping:
+            pointer: /chat_history/*/tool_results/*/call/name
+          inputMapping:
+            pointer: /chat_history/*/tool_results/*/call/parameters
+        statusMapping:
+          success: {}
+          error: {}
+        startAttributes:
+        - pointer: /chat_history/*/tool_results/*/outputs/0
+          overrideValue: {}
+          arrayPointersEnabled: true
+      documentsMapping:
+        documentBlockMapping:
+          indexMapping: {}
+          nameMapping:
+            pointer: /documents/**/title
+          formatMapping:
+            pointer: /documents/**/title
+            prefix: .
+            append: true
+          contentMapping:
+            pointer: /documents/**/text
+    assistant:
+      roleMapping:
+        pointer: /chat_history/*/role
+        overrideValue: CHATBOT
+      textBlockMapping:
+        textMapping:
+          pointer: /chat_history/*/message
+        mergeConsecutiveBlocks: true
+      toolUseBlockMapping:
+        toolUseIdMapping: {}
+        nameMapping:
+          pointer: /chat_history/*/tool_calls/*/name
+        inputMapping:
+          pointer: /chat_history/*/tool_calls/*/parameters
+  lastMessageMappings:
+    user:
+      overrideMapping:
+        roleMapping: {}
+        textBlockMapping:
+          textMapping:
+            pointer: /message
+          mergeConsecutiveBlocks: true
+        toolResultBlockMapping:
+          toolUseIdMapping: {}
+          contentMapping:
+            jsonBlockMapping:
+              jsonMapping:
+                pointer: /tool_results/**/outputs/*
+                arrayPointersEnabled: true
+            textBlockMapping:
+              textMapping:
+                pointer: /tool_results/**/outputs/*/text
+            documentsMapping:
+              documentBlockMapping:
+                indexMapping: {}
+                nameMapping:
+                  pointer: /documents/***/title
+                formatMapping:
+                  pointer: /documents/***/title
+                  prefix: .
+                  append: true
+                contentMapping:
+                  pointer: /documents/***/text
+          toolUseBlockMapping:
+            toolUseIdMapping: {}
+            nameMapping:
+              pointer: /tool_results/**/call/name
+            inputMapping:
+              pointer: /tool_results/**/call/parameters
+          statusMapping:
+            success: {}
+            error: {}
+          startAttributes:
+          - pointer: /tool_results/**/outputs/0
+            overrideValue: {}
+            arrayPointersEnabled: true
+  systemMapping:
+    textBlockMapping:
+      textMapping:
+        pointer: /preamble
+        append: true
+  inferenceConfigMapping:
+    maxTokensMapping:
+      pointer: /max_tokens
+    temperatureMapping:
+      pointer: /temperature
+    topPMapping:
+      pointer: /p
+    stopSequencesMapping:
+      pointer: /stop_sequences
+    topPMinimumOverride: 0.01
+    topPMaximumOverride: 0.99
+    stopSequenceLengthMaximum: 8191
+  toolConfigMapping:
+    toolSpecMapping:
+      nameMapping:
+        pointer: /tools/*/name
+      descriptionMapping:
+        pointer: /tools/*/description
+      inputSchemaMapping: {}
+    toolChoiceMapping:
+      autoToolChoiceMapping:
+        autoMapping: {}
+  customRequestMappers:
+  - CohereV2ToolJsonSchemaMapper
+responseMapping:
+  resultMapping:
+    outputMapping:
+      messageMapping:
+        roleMapping:
+          overrideValue: assistant
+        contentMapping:
+          textMapping:
+            pointer: /text
+          toolUseMapping:
+            nameMapping:
+              pointer: /tool_calls/*/name
+            inputMapping:
+              jsonMapping:
+                pointer: /tool_calls/*/parameters
+    stopReasonMapping:
+      pointer: /finish_reason
+      valueMap:
+        MAX_TOKENS: TOKEN_LIMIT
+        ERROR_TOXIC: CONTENT_FILTERED
+        STOP_SEQUENCE: STOP_SEQUENCE
+      valueMapDefault: UNKNOWN
+    additionalFieldsRoot: /
+responseEventMapping:
+  resultEventMapping:
+    outputMapping:
+      messageDeltaMapping:
+        roleMapping:
+          overrideValue: assistant
+        contentMapping:
+          textMapping:
+            pointer: /text
+            readOnConditions:
+            - operator: OR
+              itemsExists:
+              - property: event_type
+                value: text-generation
+              - property: event_type
+                value: tool-calls-chunk
+          toolUseMapping:
+            nameMapping:
+              pointer: /tool_call_delta/name
+            inputMapping:
+              jsonMapping:
+                pointer: /tool_call_delta/parameters
+  completionEventMapping:
+    stopReasonMapping:
+      pointer: /finish_reason
+      valueMap:
+        MAX_TOKENS: TOKEN_LIMIT
+        ERROR_TOXIC: CONTENT_FILTERED
+        STOP_SEQUENCE: STOP_SEQUENCE
+      valueMapDefault: UNKNOWN
+includeConvoWithToolUse: true

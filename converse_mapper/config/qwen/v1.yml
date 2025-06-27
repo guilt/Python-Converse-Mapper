@@ -1,0 +1,54 @@
+provider: qwen
+version: 1
+requestMapping:
+  messageMappings:
+    user:
+      roleMapping: {}
+      textBlockMapping:
+        textMapping:
+          pointer: /prompt
+  lastMessageMappings:
+    user:
+      overrideMapping: null
+  inferenceConfigMapping:
+    maxTokensMapping:
+      pointer: /max_tokens
+    temperatureMapping:
+      pointer: /temperature
+    topPMapping:
+      pointer: /top_p
+    stopSequencesMapping:
+      pointer: /stop
+    stopSequenceLengthMaximum: 10
+responseMapping:
+  resultMapping:
+    outputMapping:
+      messageMapping:
+        roleMapping:
+          overrideValue: assistant
+        contentMapping:
+          textMapping:
+            pointer: /choices/0/text
+    stopReasonMapping:
+      pointer: /choices/0/stop_reason
+      valueMap:
+        stop: TURN_END
+        length: TOKEN_LIMIT
+      valueMapDefault: UNKNOWN
+    additionalFieldsRoot: /
+responseEventMapping:
+  resultEventMapping:
+    outputMapping:
+      messageDeltaMapping:
+        roleMapping:
+          overrideValue: assistant
+        contentMapping:
+          textMapping:
+            pointer: /choices/0/text
+  completionEventMapping:
+    stopReasonMapping:
+      pointer: /stop_reason
+      valueMap:
+        stop: TURN_END
+        length: TOKEN_LIMIT
+      valueMapDefault: UNKNOWN

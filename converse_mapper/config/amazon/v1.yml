@@ -1,0 +1,278 @@
+provider: amazon
+version: 1
+requestMapping:
+  messageMappings:
+    user:
+      roleMapping:
+        pointer: /messages/*/role
+      textBlockMapping:
+        textMapping:
+          pointer: /messages/*/content/*/text
+      imageBlockMapping:
+        formatMapping:
+          pointer: /messages/*/content/*/image/format
+        bytesMapping:
+          pointer: /messages/*/content/*/image/source/bytes
+        s3UriMapping:
+          pointer: /messages/*/content/*/image/source/s3Location/uri
+        s3BucketOwnerMapping:
+          pointer: /messages/*/content/*/image/source/s3Location/bucketOwner
+      videoBlockMapping:
+        formatMapping:
+          pointer: /messages/*/content/*/video/format
+        bytesMapping:
+          pointer: /messages/*/content/*/video/source/bytes
+        s3UriMapping:
+          pointer: /messages/*/content/*/video/source/s3Location/uri
+        s3BucketOwnerMapping:
+          pointer: /messages/*/content/*/video/source/s3Location/bucketOwner
+      cachePointBlockMapping:
+        typeMapping:
+          pointer: /messages/*/content/*/cachePoint/type
+          overrideValue: default
+          overwriteAllowed: true
+        mergeInPreviousBlock: true
+      toolResultBlockMapping:
+        toolUseIdMapping:
+          pointer: /messages/*/content/*/toolResult/toolUseId
+        contentMapping:
+          jsonBlockMapping:
+            jsonMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/json
+          textBlockMapping:
+            textMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/text
+          imageBlockMapping:
+            formatMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/image/format
+            bytesMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/image/source/bytes
+            s3UriMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/image/source/s3Location/uri
+            s3BucketOwnerMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/image/source/s3Location/bucketOwner
+          videoBlockMapping:
+            formatMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/video/format
+            bytesMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/video/source/bytes
+            s3UriMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/video/source/s3Location/uri
+            s3BucketOwnerMapping:
+              pointer: /messages/*/content/*/toolResult/content/*/video/source/s3Location/bucketOwner
+          documentsMapping:
+            documentBlockMapping:
+              nameMapping: {}
+              formatMapping: {}
+              contentMapping:
+                pointer: /messages/*/content/*/toolResult/content/*/text
+            mapContentLevelDocuments: false
+          rawDocumentsMapping:
+            rawDocumentBlockMapping:
+              nameMapping:
+                pointer: /messages/*/content/*/toolResult/content/*/document/name
+              formatMapping:
+                pointer: /messages/*/content/*/toolResult/content/*/document/format
+              bytesMapping:
+                dataMapping:
+                  pointer: /messages/*/content/*/toolResult/content/*/document/source/bytes
+              s3UriMapping:
+                pointer: /messages/*/content/*/toolResult/content/*/document/source/s3Location/uri
+              s3BucketOwnerMapping:
+                pointer: /messages/*/content/*/toolResult/content/*/document/source/s3Location/bucketOwner
+            mapContentLevelDocuments: false
+        statusMapping:
+          success:
+            pointer: /messages/*/content/*/toolResult/status
+            overrideValue: success
+          error:
+            pointer: /messages/*/content/*/toolResult/status
+            overrideValue: error
+      documentsMapping:
+        documentBlockMapping:
+          nameMapping: {}
+          formatMapping: {}
+          contentMapping:
+            pointer: /messages/*/content/*/text
+        mapContentLevelDocuments: false
+      rawDocumentsMapping:
+        rawDocumentBlockMapping:
+          nameMapping:
+            pointer: /messages/*/content/*/document/name
+          formatMapping:
+            pointer: /messages/*/content/*/document/format
+          bytesMapping:
+            dataMapping:
+              pointer: /messages/*/content/*/document/source/bytes
+          s3UriMapping:
+            pointer: /messages/*/content/*/document/source/s3Location/uri
+          s3BucketOwnerMapping:
+            pointer: /messages/*/content/*/document/source/s3Location/bucketOwner
+        mapContentLevelDocuments: false
+    assistant:
+      roleMapping:
+        pointer: /messages/*/role
+      textBlockMapping:
+        textMapping:
+          pointer: /messages/*/content/*/text
+      reasoningBlockMapping:
+        reasoningTextBlockMapping:
+          textMapping:
+            pointer: /messages/*/content/*/reasoningContent/text
+      citationsContentBlockMapping:
+        citationsMapping:
+          locationMapping:
+            webMapping:
+              urlMapping:
+                pointer: /messages/*/content/*/citationsContent/citations/*/location/web/url
+              domainMapping:
+                pointer: /messages/*/content/*/citationsContent/citations/*/location/web/domain
+      cachePointBlockMapping:
+        typeMapping:
+          pointer: /messages/*/content/*/cachePoint/type
+          overrideValue: default
+          overwriteAllowed: true
+        mergeInPreviousBlock: true
+      toolUseBlockMapping:
+        toolUseIdMapping:
+          pointer: /messages/*/content/*/toolUse/toolUseId
+        nameMapping:
+          pointer: /messages/*/content/*/toolUse/name
+        inputMapping:
+          pointer: /messages/*/content/*/toolUse/input
+        typeMapping:
+          pointer: /messages/*/content/*/toolUse/type
+  lastMessageMappings:
+    user:
+      overrideMapping: null
+    assistant:
+      overrideMapping: null
+  systemMapping:
+    textBlockMapping:
+      textMapping:
+        pointer: /system/**/text
+    cachePointBlockMapping:
+      typeMapping:
+        pointer: /system/**/cachePoint/type
+        overrideValue: default
+        overwriteAllowed: true
+      mergeInPreviousBlock: true
+  inferenceConfigMapping:
+    maxTokensMapping:
+      pointer: /inferenceConfig/maxTokens
+    temperatureMapping:
+      pointer: /inferenceConfig/temperature
+    topPMapping:
+      pointer: /inferenceConfig/topP
+    stopSequencesMapping:
+      pointer: /inferenceConfig/stopSequences
+    topPMinimumOverride: 1.0e-10
+    temperatureMinimumOverride: 1.0e-10
+    stopSequenceLengthMaximum: 2500
+  toolConfigMapping:
+    toolSpecMapping:
+      nameMapping:
+        pointer: /toolConfig/tools/*/toolSpec/name
+      descriptionMapping:
+        pointer: /toolConfig/tools/*/toolSpec/description
+      inputSchemaMapping:
+        pointer: /toolConfig/tools/*/toolSpec/inputSchema/json
+    cachePointBlockMapping:
+      typeMapping:
+        pointer: /toolConfig/tools/*/cachePoint/type
+        overrideValue: default
+        overwriteAllowed: true
+      mergeInPreviousBlock: true
+    systemToolMapping:
+      nameMapping:
+        pointer: /toolConfig/tools/*/systemTool/name
+    toolChoiceMapping:
+      autoToolChoiceMapping:
+        autoMapping:
+          pointer: /toolConfig/toolChoice
+          overrideValue:
+            auto: {}
+      anyToolChoiceMapping:
+        anyMapping:
+          pointer: /toolConfig/toolChoice
+          overrideValue:
+            any: {}
+      specificToolChoiceMapping:
+        nameMapping:
+          pointer: /toolConfig/toolChoice/tool/name
+responseMapping:
+  resultMapping:
+    outputMapping:
+      messageMapping:
+        roleMapping:
+          pointer: /output/message/role
+        contentMapping:
+          textMapping:
+            pointer: /output/message/content/*/text
+          toolUseMapping:
+            nameMapping:
+              pointer: /output/message/content/*/toolUse/name
+            typeMapping:
+              pointer: /output/message/content/*/toolUse/type
+            inputMapping:
+              jsonMapping:
+                pointer: /output/message/content/*/toolUse/input
+          reasoningMapping:
+            textMapping:
+              pointer: /output/message/content/*/reasoningText/text
+          citationsContentMapping:
+            citationsMapping:
+              locationMapping:
+                webMapping:
+                  urlMapping:
+                    pointer: /output/message/content/*/citationsContent/citations/*/location/web/url
+                  domainMapping:
+                    pointer: /output/message/content/*/citationsContent/citations/*/location/web/domain
+    stopReasonMapping:
+      pointer: /stopReason
+      valueMap:
+        max_tokens: TOKEN_LIMIT
+        tool_use: TOOL_USE
+        content_filtered: CONTENT_FILTERED
+        guardrail_intervened: GUARDRAIL_INTERVENED
+      valueMapDefault: UNKNOWN
+    additionalFieldsRoot: /
+responseEventMapping:
+  resultEventMapping:
+    outputMapping:
+      messageDeltaMapping:
+        roleMapping:
+          pointer: /messageStart/role
+        contentMapping:
+          textMapping:
+            pointer: /contentBlockDelta/delta/text
+          toolUseMapping:
+            nameMapping:
+              pointer: /contentBlockStart/start/toolUse/name
+            typeMapping:
+              pointer: /contentBlockStart/start/toolUse/type
+            inputMapping:
+              jsonMapping:
+                pointer: /contentBlockDelta/delta/toolUse/input
+          reasoningDeltaMapping:
+            textMapping:
+              pointer: /contentBlockDelta/delta/reasoningContent/text
+          citationDeltaMapping:
+            locationMapping:
+              webMapping:
+                urlMapping:
+                  pointer: /contentBlockDelta/delta/citation/location/web/url
+                domainMapping:
+                  pointer: /contentBlockDelta/delta/citation/location/web/domain
+  completionEventMapping:
+    stopReasonMapping:
+      pointer: /messageStop/stopReason
+      valueMap:
+        max_tokens: TOKEN_LIMIT
+        tool_use: TOOL_USE
+        content_filtered: CONTENT_FILTERED
+        guardrail_intervened: GUARDRAIL_INTERVENED
+      valueMapDefault: UNKNOWN
+includeConvoWithToolUse: true
+includeConvoWithToolResult: true
+errorMappings: []
